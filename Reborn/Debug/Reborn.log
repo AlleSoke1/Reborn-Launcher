@@ -1,0 +1,17 @@
+﻿Build started 1/13/2015 3:16:52 AM.
+     1>Project "C:\Users\Katarin\Documents\Visual Studio 2015\Projects\Reborn\Reborn\Reborn.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         D:\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt Source.cpp
+         Source.cpp
+         _WIN32_WINNT not defined. Defaulting to _WIN32_WINNT_MAXVER (see WinSDKVer.h)
+       ResourceCompile:
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe /D _UNICODE /D UNICODE /l"0x0409" /nologo /fo"Debug\Resource.res" Resource.rc 
+       Link:
+         D:\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Katarin\Documents\Visual Studio 2015\Projects\Reborn\Debug\Reborn.exe" /INCREMENTAL /NOLOGO /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"D:\Microsoft Visual Studio 14.0\VC\Include\Manifest\dpiaware.manifest" /Debug /PDB:"C:\Users\Katarin\Documents\Visual Studio 2015\Projects\Reborn\Debug\Reborn.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Katarin\Documents\Visual Studio 2015\Projects\Reborn\Debug\Reborn.lib" /MACHINE:X86 Debug\Resource.res
+         Debug\Source.obj
+         Reborn.vcxproj -> C:\Users\Katarin\Documents\Visual Studio 2015\Projects\Reborn\Debug\Reborn.exe
+     1>Done Building Project "C:\Users\Katarin\Documents\Visual Studio 2015\Projects\Reborn\Reborn\Reborn.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.28
