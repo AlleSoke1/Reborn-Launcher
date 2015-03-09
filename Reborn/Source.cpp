@@ -136,7 +136,11 @@ void REBORN_MainForm::OnBnClickedOk()
 		}
 	}
 	//Validate the account with web :)
+#if API_VER == 1
 	std::string tempData = "login&"+uconv+"&"+capital(md5(pconv)).c_str();
+#elif API_VER == 2
+	std::string tempData = "login&" + uconv + "&" + capital(md5(pconv)).c_str() + "&" + std::to_string(API_VER); //add version2 api line
+#endif
 	std::string api = API_URL;
 	std::string base64data = base64_encode((unsigned const char*)tempData.c_str(), tempData.length());
 	std::string tempSend = api+"?r="+base64data;
@@ -160,14 +164,26 @@ void REBORN_MainForm::OnBnClickedOk()
 				//MessageBoxA(delimited[0].c_str(), "RESULT", MB_OK);
 				//MessageBoxA(delimited[1].c_str(), "IP", MB_OK);
 				//MessageBoxA(delimited[2].c_str(), "PORT", MB_OK);
-
-				//START PROCESS.
+				//API V2
+				//MessageBoxA(delimited[3].c_str(), "MD5SALTEDPASSWORD", MB_OK);
 
 				char lpArguments[256];
-				wsprintf(lpArguments, "/logintoken:%s&%s /ip:%s /port:%s /Lver:2 /use_packing /gamechanneling:0", uconv.c_str(), capital(md5(pconv)).c_str(),delimited[1].c_str(), delimited[2].c_str());
 				char lpApplicationName[128];
-				wsprintf(lpApplicationName, "Dragon.exe",ExePath().c_str());
-				
+				//START PROCESS.
+				if (FileExists(".//Connect.ini") == true)
+				{
+					char Custom_IP[256];
+					char Custom_PORT[256];
+					char Custom_EXECUTABLE[256];
+					GetPrivateProfileString("SkyNest", "IP", "", Custom_PORT, 256, ".//Connect.ini");
+					GetPrivateProfileString("SkyNest", "PORT", "", Custom_PORT, 256, ".//Connect.ini");
+					GetPrivateProfileString("SkyNest", "Executable", "", Custom_EXECUTABLE, 256, ".//Connect.ini");	
+					wsprintf(lpArguments, "/logintoken:%s&%s /ip:%s /port:%s /Lver:2 /use_packing /gamechanneling:0", uconv.c_str(), capital(md5(pconv)).c_str(), Custom_IP, Custom_PORT);
+					wsprintf(lpApplicationName, "%s", Custom_EXECUTABLE);
+				}else{
+					wsprintf(lpArguments, "/logintoken:%s&%s /ip:%s /port:%s /Lver:2 /use_packing /gamechanneling:0", uconv.c_str(), capital(md5(pconv)).c_str(),delimited[1].c_str(), delimited[2].c_str());
+					wsprintf(lpApplicationName, "Dragon.exe");
+				}
 				
 				//MessageBox(lpArguments, "Arguments", MB_OK);
 				
