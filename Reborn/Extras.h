@@ -2,11 +2,18 @@
 #define EXTRAS_H
 #pragma once
 
+//#define _TEST
 
-#define API_URL "http://reborn.dragonnest.ro/motto-yesno"
+#ifdef _TEST
+	#define API_URL "http://api.test.reborn.dragonnest.ro/motto-yesno"
+#else
+	#define API_URL "http://api.dragonnest.ro/motto-yesno"
+#endif
+
 #define API_VER 2
 #define USERAGENT "dragonnest.ro"
-#define STORE_ACCOUNT "./Data.sky"
+#define STORE_ACCOUNT ".//Data.sky"
+#define CONNECT_SETTINGS ".//Connect.ini"
 #define XOR_KEY 0xFF
 
 

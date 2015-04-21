@@ -15,6 +15,9 @@ using namespace std;
 CDialog * RebornForm;
 CEdit * username;
 CEdit * password;
+//ByPass ^_^
+bool _Bypass = false;
+
 
 BOOL REBORN_MainForm::OnInitDialog()
 {
@@ -26,15 +29,19 @@ BOOL REBORN_MainForm::OnInitDialog()
 	LPWSTR *szArglist;
 	int nArgs = 0;
 	szArglist = CommandLineToArgvW(GetCommandLineW(), &nArgs);
-	
-	if (nArgs < 6)
-	{
-		MessageBoxA("Load game via DNLauncher.exe!", "Attention!", MB_ICONWARNING);
-		ExitProcess(0);
-	}
 
+		if (nArgs < 6 && FileExists(CONNECT_SETTINGS) == false)
+		{
+			MessageBoxA("Load game via DNLauncher.exe!", "Attention!", MB_ICONWARNING);
+			ExitProcess(0);
+		}
+		else 
+		{
+			_Bypass = true;
+		}
+	
 	//Check Upgrade ?
-	FS_CheckUpgrade();
+	//FS_CheckUpgrade();
 
 
 
@@ -55,10 +62,19 @@ BOOL REBORN_MainForm::OnInitDialog()
 	GetDlgItem(IDC_T_PASSWORD)->SetWindowTextA("Password");
 	
 	//SECURITY CHECK   
-	if (API_URL[7] != 'r')
+#ifdef _TEST
+	if (API_URL[7] != 't') //test
 	{
 		ExitProcess(0);
 	}
+#else
+	if (API_URL[7] != 'r') //reborn
+	{
+		ExitProcess(0);
+	}
+#endif
+
+
 
 	if (IsDebuggerPresent())
     {
@@ -99,19 +115,20 @@ void REBORN_MainForm::OnBnClickedOk()
 	char buff[128];
 	wsprintf(buff,"%s&%s  XORED: %s %s",uconv.c_str(),capital(md5(pconv)).c_str(),xorIT(uconv).c_str(),xorIT(pconv).c_str());
 	//MessageBoxA(buff, "OK", MB_OK); 
-	
-	//CHECK SIZE! Min 6 Max 18
-	if (uconv.length() < 6 || uconv.length() > 18)
-	{
-		MessageBox("Username must between 6 and 18 characters!", "Attention!", MB_ICONEXCLAMATION);
-		return;
-	}
-	if (pconv.length() < 6 | pconv.length() > 18)
-	{
-		MessageBox("Passsword must between 6 and 18 characters!", "Attention!", MB_ICONEXCLAMATION);
-		return;
-	}
 
+	if (_Bypass == false) {
+		//CHECK SIZE! Min 6 Max 18
+		if (uconv.length() < 6 || uconv.length() > 18)
+		{
+			MessageBox("Username must between 6 and 18 characters!", "Attention!", MB_ICONEXCLAMATION);
+			return;
+		}
+		if (pconv.length() < 6 | pconv.length() > 18)
+		{
+			MessageBox("Passsword must between 6 and 18 characters!", "Attention!", MB_ICONEXCLAMATION);
+			return;
+		}
+	}
 	//Disable the OK button
 	GetDlgItem(IDOK)->EnableWindow(false);
 	//Get CHECKBOX status and save/remove account data.
@@ -139,7 +156,7 @@ void REBORN_MainForm::OnBnClickedOk()
 #if API_VER == 1
 	std::string tempData = "login&"+uconv+"&"+capital(md5(pconv)).c_str();
 #elif API_VER == 2
-	std::string tempData = "login&" + uconv + "&" + capital(md5(pconv)).c_str() + "&" + std::to_string(API_VER); //add version2 api line
+	std::string tempData = "login&" + uconv + "&" + pconv + "&" + std::to_string(API_VER); //add version2 api line
 #endif
 	std::string api = API_URL;
 	std::string base64data = base64_encode((unsigned const char*)tempData.c_str(), tempData.length());
@@ -170,19 +187,22 @@ void REBORN_MainForm::OnBnClickedOk()
 				char lpArguments[256];
 				char lpApplicationName[128];
 				//START PROCESS.
-				if (FileExists(".//Connect.ini") == true)
+				if (FileExists(CONNECT_SETTINGS) == true)
 				{
 					char Custom_IP[256];
 					char Custom_PORT[256];
 					char Custom_EXECUTABLE[256];
-					GetPrivateProfileString("SkyNest", "IP", "", Custom_PORT, 256, ".//Connect.ini");
-					GetPrivateProfileString("SkyNest", "PORT", "", Custom_PORT, 256, ".//Connect.ini");
-					GetPrivateProfileString("SkyNest", "Executable", "", Custom_EXECUTABLE, 256, ".//Connect.ini");	
-					wsprintf(lpArguments, "/logintoken:%s&%s /ip:%s /port:%s /Lver:2 /use_packing /gamechanneling:0", uconv.c_str(), capital(md5(pconv)).c_str(), Custom_IP, Custom_PORT);
+					GetPrivateProfileString("SkyNest", "IP", "", Custom_IP, 256, CONNECT_SETTINGS);
+					GetPrivateProfileString("SkyNest", "PORT", "", Custom_PORT, 256, CONNECT_SETTINGS);
+					GetPrivateProfileString("SkyNest", "Executable", "", Custom_EXECUTABLE, 256, CONNECT_SETTINGS);
+					wsprintf(lpArguments, "/logintoken:%s&%s /ip:%s /port:%s /Lver:2 /use_packing /gamechanneling:0", uconv.c_str(), delimited[3].c_str(), Custom_IP, Custom_PORT);
 					wsprintf(lpApplicationName, "%s", Custom_EXECUTABLE);
+#ifdef _TEST
+					MessageBoxA(lpArguments, "OK", MB_OK);
+#endif
 				}else{
-					wsprintf(lpArguments, "/logintoken:%s&%s /ip:%s /port:%s /Lver:2 /use_packing /gamechanneling:0", uconv.c_str(), capital(md5(pconv)).c_str(),delimited[1].c_str(), delimited[2].c_str());
-					wsprintf(lpApplicationName, "Dragon.exe");
+					wsprintf(lpArguments, "/logintoken:%s&%s /ip:%s /port:%s /Lver:2 /use_packing /gamechanneling:0", uconv.c_str(), delimited[3].c_str(), delimited[1].c_str(), delimited[2].c_str());
+					wsprintf(lpApplicationName, ".\\Dragon.exe");
 				}
 				
 				//MessageBox(lpArguments, "Arguments", MB_OK);
@@ -239,8 +259,11 @@ void REBORN_MainForm::OnEmptyRememberdAccount()
 
 void REBORN_MainForm::OnRegister()
 {
+	MessageBoxA("Please visit our website : https://reborn.dragonnest.ro", "Disabled.", MB_OK);
+/* //Disabled in release.
 	REBORN_RegisterForm Dlg;
 	Dlg.DoModal();
+*/
 }
 
 
@@ -252,11 +275,11 @@ void REBORN_MainForm::OnExitMenu()
 
 void REBORN_MainForm::OnAbout()
 {
-	MessageBoxA("Created by Alin1337", "About", MB_OK);
+	MessageBoxA("Created by Alin1337 for SkyNest REBORN.", "About", MB_OK);
 }
 
 
 void REBORN_MainForm::OnResetPassword()
 {
-	MessageBoxA("SOON", "TESTING", MB_OK);
+	MessageBoxA("Please visit our website : https://reborn.dragonnest.ro", "Disabled.", MB_OK);
 }

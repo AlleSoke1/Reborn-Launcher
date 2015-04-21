@@ -6,7 +6,7 @@
 using namespace std;
 
 extern "C" std::size_t append_to_string(void* contents, std::size_t size, std::size_t nmemb, void* pstr)
-{
+{ 
 	const std::size_t sz = size * nmemb;
 	const char* cstr = static_cast<const char*>(contents);
 	std::string& str = *static_cast< std::string* >(pstr);
@@ -23,7 +23,6 @@ string get(string url)
 
 	curl_easy_setopt(curl_handle, CURLOPT_URL, url); // url
 	curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, append_to_string); // call 'append_to_string' with data
-
 																			// pass the address of string 'page' to the callback 'append_to_string'
 	curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, std::addressof(page));
 	curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "dragonnest.ro"); // user-agent (optional)
